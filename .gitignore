@@ -6,4 +6,4 @@ poetry.lock
 # 目錄名稱
 venv/
 .idea/
-__pycache__/%
+__pycache__/
