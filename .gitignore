@@ -1,0 +1,8 @@
+# 單個檔案
+*.env
+poetry.lock
+
+# 目錄名稱
+venv/
+.idea/
+__pycache__/%
