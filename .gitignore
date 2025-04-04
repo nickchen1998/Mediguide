@@ -1,5 +1,6 @@
 # 單個檔案
 *.env
+secrets.toml
 poetry.lock
 
 # 目錄名稱
