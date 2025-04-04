@@ -8,5 +8,10 @@
     "department": "耳鼻喉科",
     "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A6%D5%BB%F3%B3%EF%AC%EC&q_like=0&q_type=%F9%AE%C3E%B5o%AA%A2",
     "start_q_type": "顳顎發炎"
+  },
+  {
+    "department": "皮膚科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A5%D6%BD%A7%AC%EC&q_like=0&q_type=%F9%AF%B0%A9%A5%C0%B4%B3",
+    "start_q_type": "顴骨母斑"
   }
 ]
