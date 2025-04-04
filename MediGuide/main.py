@@ -5,6 +5,7 @@ import time
 from audio_recorder_streamlit import audio_recorder
 from openai import OpenAI
 import tempfile
+import utils
 
 openai_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.set_page_config(page_title="智慧問診機器人", page_icon="🩺")
@@ -44,25 +45,10 @@ with st.sidebar:
 st.title("智慧問診機器人 🩺")
 st.write("🔔 **提醒**：本網站僅為問診輔助原型，請勿作為醫療診斷依據。如有身體不適請洽專業醫師。")
 
-
-# 顯示問診紀錄
-def write_history():
-    for message in st.session_state['history']:
-        with st.chat_message(message['role']):
-            st.write(message['content'])
-
-
-write_history()
-
-# 輸入並處理提問
+# 問診區塊
+utils.write_history()
 if question := st.chat_input("請輸入您的訊息..."):
-    # 顯示使用者輸入
-    with st.chat_message("user"):
-        st.write(question)
-    st.session_state['history'].append({
-        "role": "user",
-        "content": question
-    })
+    utils.set_chat_message("user", question)
 
     # 檢查基本資料是否齊全
     if not all([name, id_number, birthday, blood_type]):
@@ -77,23 +63,12 @@ if question := st.chat_input("請輸入您的訊息..."):
                 f"請使用繁體中文回答我的問題，我的問題是：\"{question}\""
             ).content
 
-    # 顯示 AI 回答（逐字效果）
-    with st.chat_message("ai"):
-        placeholder = st.empty()
-        text = ""
-        for char in system_reply:
-            text += char
-            placeholder.markdown(text)
-            time.sleep(0.02)  # 控制文字跳出速度（越小越快）
+    utils.set_chat_message("ai", system_reply)
 
-    st.session_state['history'].append({
-        "role": "ai",
-        "content": system_reply
-    })
 
 # 顯示問診摘要
 if st.session_state['history']:
-    with st.expander("📋 問診摘要"):
+    with st.expander("📋 問診結果"):
         st.subheader("👤 使用者資料")
         st.write(f"**姓名**：{name or '（未填寫）'}")
         st.write(f"**身分證字號**：{id_number or '（未填寫）'}")
