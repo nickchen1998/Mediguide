@@ -12,6 +12,7 @@ pymongo = "^4.11.3"
 langchain = "^0.3.21"
 langchain-openai = "^0.3.10"
 langchain-mongodb = "^0.6.0"
+audio-recorder-streamlit = "^0.0.10"
 
 
 [build-system]
