@@ -1,11 +1,13 @@
+import os
 import utils
 import chains
 import streamlit as st
 from datetime import date
 from langchain_openai import ChatOpenAI
 from audio_recorder_streamlit import audio_recorder
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
+
+if os.environ.get("OPENAI_API_KEY") is None:
+    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
 st.set_page_config(page_title="智慧問診機器人", page_icon="🩺")
 # 初始化對話紀錄
@@ -28,7 +30,6 @@ with st.sidebar:
             try:
                 record_text = utils.get_record_text_by_whisper(audio_bytes)
                 user_info = chains.get_user_info_chain(record_text)
-                print(user_info)
 
                 st.session_state["name"] = user_info.get("name", "")
                 st.session_state["id_number"] = user_info.get("id_number", "")
@@ -59,19 +60,20 @@ utils.write_history()
 if question := st.chat_input("請輸入您的訊息..."):
     utils.set_chat_message("user", question)
 
-    with st.spinner("思考中..."):
-        llm = ChatOpenAI(
-            model_name="gpt-4o",
-            api_key=st.secrets["OPENAI_API_KEY"]
-        )
-        system_reply = llm.invoke(
-            f"請使用繁體中文回答我的問題，我的問題是：\"{question}\""
-        ).content
-
-    utils.set_chat_message("ai", system_reply)
+    if not all([name, id_number, birthday, blood_type]):
+        utils.set_chat_message("ai", "請先填寫基本資料，再進行問答！")
+    else:
+        with st.spinner("思考中..."):
+            llm = ChatOpenAI(
+                model_name="gpt-4o",
+            )
+            system_reply = llm.invoke(
+                f"請使用繁體中文回答我的問題，我的問題是：\"{question}\""
+            ).content
+        utils.set_chat_message("ai", system_reply)
 
 # 顯示問診摘要
-if st.session_state['history']:
+if st.session_state['history'] and not st.session_state['history'][-1]['content'] == "請先填寫基本資料，再進行問答！":
     with st.expander("📋 問診結果"):
         st.subheader("👤 使用者資料")
         st.write(f"**姓名**：{name or '（未填寫）'}")
