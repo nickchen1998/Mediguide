@@ -1,70 +1,74 @@
-import streamlit as st
-from langchain_openai import ChatOpenAI
-from datetime import date
-import time
-from audio_recorder_streamlit import audio_recorder
-from openai import OpenAI
-import tempfile
 import utils
+import chains
+import streamlit as st
+from datetime import date
+from langchain_openai import ChatOpenAI
+from audio_recorder_streamlit import audio_recorder
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
 
-openai_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.set_page_config(page_title="智慧問診機器人", page_icon="🩺")
-
 # 初始化對話紀錄
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 
-# 側邊欄：輸入個人資料
 with st.sidebar:
     st.header("📝 基本資料填寫")
-    name = st.text_input("姓名")
-    id_number = st.text_input("身分證字號")
-    birthday = st.date_input("出生年月日", value=date(2000, 1, 1))
-    blood_type = st.selectbox("血型", ["A", "B", "AB", "O"])
+    name = st.text_input("姓名", value=st.session_state.get("name", ""))
+    id_number = st.text_input("身分證字號", value=st.session_state.get("id_number", ""))
+    birthday = st.date_input("出生年月日", value=st.session_state.get("birthday", "today"))
+    blood_type = st.selectbox(
+        "血型", ["", "A", "B", "AB", "O"],
+        index=["", "A", "B", "AB", "O"].index(st.session_state.get("blood_type", ""))
+    )
 
-    st.markdown("---")
-    audio_bytes = audio_recorder(text="🎤 點我開始錄音")
-    if audio_bytes:
-        st.sidebar.success("✅ 錄音完成，正在辨識...")
+    if audio_bytes := audio_recorder(text="使用聲音輔助輸入", icon_size="15px"):
+        if not st.session_state.get("recognized", False) and len(audio_bytes) / (1024 * 1024) > 0.1:
+            st.sidebar.success("✅ 錄音完成，正在辨識...")
+            try:
+                record_text = utils.get_record_text_by_whisper(audio_bytes)
+                user_info = chains.get_user_info_chain(record_text)
+                print(user_info)
 
-        # 使用 Whisper 模型進行語音辨識
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
-            tmp_file.write(audio_bytes)
-            tmp_file_path = tmp_file.name
-        with open(tmp_file_path, "rb") as audio_file:
-            translation = openai_client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                language="zh",
-            )
+                st.session_state["name"] = user_info.get("name", "")
+                st.session_state["id_number"] = user_info.get("id_number", "")
+                if user_info.get("birthday"):
+                    st.session_state["birthday"] = date.fromisoformat(user_info["birthday"])
+                if user_info.get("blood_type"):
+                    st.session_state["blood_type"] = user_info.get("blood_type")
+
+                st.session_state["recognized"] = True
+                st.sidebar.success("✅ 辨識完成，請查閱上方基本資料是否正確！")
+                st.rerun()
+            except Exception as e:
+                print(e)
+                st.sidebar.error("❌ 辨識失敗，請稍後再試。")
+                st.session_state["recognized"] = False
+    else:
+        st.session_state["recognized"] = False
 
     st.markdown("---")
     st.caption("※ 本頁面僅作為展示用途，所填資料不會被儲存。")
 
-# 主標題
-st.title("智慧問診機器人 🩺")
-st.write("🔔 **提醒**：本網站僅為問診輔助原型，請勿作為醫療診斷依據。如有身體不適請洽專業醫師。")
-
 # 問診區塊
+st.title("智慧問診機器人 🩺")
+st.markdown("🔔 **提醒**：本網站僅為問診輔助原型，請勿作為醫療診斷依據，如有身體不適請洽專業醫師。")
 utils.write_history()
+
+# 問診輸入區
 if question := st.chat_input("請輸入您的訊息..."):
     utils.set_chat_message("user", question)
 
-    # 檢查基本資料是否齊全
-    if not all([name, id_number, birthday, blood_type]):
-        system_reply = "請先填寫完整的基本資料後再進行問診。"
-    else:
-        with st.spinner("思考中..."):
-            llm = ChatOpenAI(
-                model_name="gpt-4o",
-                api_key=st.secrets["OPENAI_API_KEY"]
-            )
-            system_reply = llm.invoke(
-                f"請使用繁體中文回答我的問題，我的問題是：\"{question}\""
-            ).content
+    with st.spinner("思考中..."):
+        llm = ChatOpenAI(
+            model_name="gpt-4o",
+            api_key=st.secrets["OPENAI_API_KEY"]
+        )
+        system_reply = llm.invoke(
+            f"請使用繁體中文回答我的問題，我的問題是：\"{question}\""
+        ).content
 
     utils.set_chat_message("ai", system_reply)
-
 
 # 顯示問診摘要
 if st.session_state['history']:

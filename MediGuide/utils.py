@@ -1,6 +1,7 @@
 import time
+import tempfile
 import streamlit as st
-
+from openai import OpenAI
 
 def write_history():
     for message in st.session_state['history']:
@@ -25,3 +26,18 @@ def set_chat_message(role, content):
         "role": role,
         "content": content
     })
+
+
+def get_record_text_by_whisper(audio_bytes: bytes):
+    openai_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
+        tmp_file.write(audio_bytes)
+        tmp_file_path = tmp_file.name
+    with open(tmp_file_path, "rb") as audio_file:
+        translation = openai_client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file,
+            language="zh",
+        )
+        return translation.text
