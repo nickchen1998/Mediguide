@@ -1,0 +1,12 @@
+[
+  {
+    "department": "肝膽腸胃科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A8x%C1x%B8z%ADG%AC%EC&q_like=0&q_type=%E4%FA%A4%DF",
+    "start_q_type": "噁心"
+  },
+  {
+    "department": "耳鼻喉科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A6%D5%BB%F3%B3%EF%AC%EC&q_like=0&q_type=%F9%AE%C3E%B5o%AA%A2",
+    "start_q_type": "顳顎發炎"
+  }
+]

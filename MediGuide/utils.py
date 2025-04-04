@@ -45,4 +45,5 @@ def get_record_text_by_whisper(audio_bytes: bytes):
             file=audio_file,
             language="zh",
         )
-        return translation.text
+
+    return translation.text
