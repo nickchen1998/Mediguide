@@ -21,7 +21,7 @@ def write_history():
             st.write(message['content'])
 
 
-def set_chat_message(role, content):
+def set_chat_message(role, content, references=None):
     if role == "ai":
         with st.chat_message("ai"):
             placeholder = st.empty()
@@ -36,7 +36,8 @@ def set_chat_message(role, content):
 
     st.session_state['history'].append({
         "role": role,
-        "content": content
+        "content": content,
+        "references": references
     })
 
 

@@ -66,7 +66,12 @@ if question := st.chat_input("請輸入您的訊息..."):
         system_reply = chains.get_suggest_with_symptom_chain(
             question=question, symptoms=symptoms
         )
-        utils.set_chat_message("ai", system_reply)
+        utils.set_chat_message("ai", system_reply, [{
+            "_id": str(symptom.id),
+            "department": symptom.department,
+            "symptom": symptom.symptom,
+            "summary": symptom.summary,
+        } for symptom in symptoms])
 
 # 顯示問診摘要
 if st.session_state['history'] and not st.session_state['history'][-1]['content'] == "請先填寫基本資料，再進行問答！":
@@ -81,3 +86,11 @@ if st.session_state['history'] and not st.session_state['history'][-1]['content'
         for msg in st.session_state['history'][-2:]:
             speaker = "使用者" if msg['role'] == "user" else "機器人"
             st.markdown(f"**{speaker}：** {msg['content']}")
+
+        st.subheader("📑 參考資料")
+        for reference in st.session_state['history'][-1]['references']:
+            st.markdown(f"- **_id**：{reference['_id']}")
+            st.markdown(f"- **科別**：{reference['department']}")
+            st.markdown(f"- **症狀分類**：{reference['symptom']}")
+            st.markdown(f"- **摘要**：{reference['summary']}")
+            st.markdown("---")
