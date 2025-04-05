@@ -4,10 +4,8 @@ import chains
 import streamlit as st
 
 from datetime import date
-from langchain_openai import ChatOpenAI
 from audio_recorder_streamlit import audio_recorder
 
-# initialize
 if os.environ.get("OPENAI_API_KEY") is None:
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 if 'history' not in st.session_state:
@@ -64,13 +62,10 @@ if question := st.chat_input("請輸入您的訊息..."):
     if not all([name, id_number, birthday, blood_type]):
         utils.set_chat_message("ai", "請先填寫基本資料，再進行問答！")
     else:
-        with st.spinner("思考中..."):
-            llm = ChatOpenAI(
-                model_name="gpt-4o",
-            )
-            system_reply = llm.invoke(
-                f"請使用繁體中文回答我的問題，我的問題是：\"{question}\""
-            ).content
+        symptoms = utils.get_symptom_by_embeddings(question)
+        system_reply = chains.get_suggest_with_symptom_chain(
+            question=question, symptoms=symptoms
+        )
         utils.set_chat_message("ai", system_reply)
 
 # 顯示問診摘要
@@ -83,6 +78,6 @@ if st.session_state['history'] and not st.session_state['history'][-1]['content'
         st.write(f"**血型**：{blood_type}")
 
         st.subheader("💬 問診對話")
-        for msg in st.session_state['history']:
+        for msg in st.session_state['history'][-2:]:
             speaker = "使用者" if msg['role'] == "user" else "機器人"
             st.markdown(f"**{speaker}：** {msg['content']}")

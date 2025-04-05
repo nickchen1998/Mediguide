@@ -96,7 +96,7 @@ def get_symptom_by_embeddings(question: str) -> List[Symptom]:
                     "path": "summary_embeddings",
                     "queryVector": embeddings,
                     "numCandidates": 100,
-                    "limit": 5
+                    "limit": 3
                 }
             }
         ])
