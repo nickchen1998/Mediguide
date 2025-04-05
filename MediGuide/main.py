@@ -93,4 +93,3 @@ if st.session_state['history'] and not st.session_state['history'][-1]['content'
             st.markdown(f"- **科別**：{reference['department']}")
             st.markdown(f"- **症狀分類**：{reference['symptom']}")
             st.markdown(f"- **摘要**：{reference['summary']}")
-            st.markdown("---")
