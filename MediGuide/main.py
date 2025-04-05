@@ -87,9 +87,10 @@ if st.session_state['history'] and not st.session_state['history'][-1]['content'
             speaker = "使用者" if msg['role'] == "user" else "機器人"
             st.markdown(f"**{speaker}：** {msg['content']}")
 
-        st.subheader("📑 參考資料")
-        for reference in st.session_state['history'][-1]['references']:
-            st.markdown(f"- **_id**：{reference['_id']}")
-            st.markdown(f"- **科別**：{reference['department']}")
-            st.markdown(f"- **症狀分類**：{reference['symptom']}")
-            st.markdown(f"- **摘要**：{reference['summary']}")
+        if st.session_state['history'][-1].get('references'):
+            st.subheader("📑 參考資料")
+            for reference in st.session_state['history'][-1]['references']:
+                st.markdown(f"- **_id**：{reference['_id']}")
+                st.markdown(f"- **科別**：{reference['department']}")
+                st.markdown(f"- **症狀分類**：{reference['symptom']}")
+                st.markdown(f"- **摘要**：{reference['summary']}")
