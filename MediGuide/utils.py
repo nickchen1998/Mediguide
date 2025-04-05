@@ -8,14 +8,11 @@ import streamlit as st
 
 from typing import List
 from openai import OpenAI
-
+from schemas import Symptom
 from pymongo.database import Database
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
-
 from langchain_openai import OpenAIEmbeddings
-from langchain_core.documents import Document
-from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
 
 
 def write_history():
@@ -81,3 +78,26 @@ def insert_symptom_subject_datas(datas: List[dict]):
     with get_mongo_database() as database:
         collection = Collection(database, name="Symptom")
         collection.insert_many(datas)
+
+
+def get_symptom_by_embeddings(question: str) -> List[Symptom]:
+    if os.getenv("OPENAI_API_KEY") is None:
+        secret_file = pathlib.Path(__file__).parent / ".streamlit" / "secrets.toml"
+        with open(secret_file, "rb") as f:
+            config = tomllib.load(f)
+        os.environ["OPENAI_API_KEY"] = config["OPENAI_API_KEY"]
+
+    with get_mongo_database() as database:
+        embeddings = OpenAIEmbeddings(model="text-embedding-3-small").embed_query(question)
+        result = database["Symptom"].aggregate([
+            {
+                "$vectorSearch": {
+                    "index": "default",
+                    "path": "summary_embeddings",
+                    "queryVector": embeddings,
+                    "numCandidates": 100,
+                    "limit": 5
+                }
+            }
+        ])
+        return [Symptom(**item) for item in result]
