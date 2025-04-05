@@ -8,6 +8,15 @@
 
 ---
 
+## ⚒️ Built With
+
+- [Streamlit](https://streamlit.io/) - 用於快速構建 Web 應用程式的 Python 函式庫
+- [LangChain](https://python.langchain.com/docs/get_started/introduction.html) - 用於構建語言模型應用程式的框架
+- [OpenAI](https://platform.openai.com/docs/introduction) - 取用 Whisper、GPT-4o、text-embedding-3-small
+- [MongoDB Atlas](https://www.mongodb.com/atlas/) - 用於儲存問診資料集以及向量
+
+---
+
 ## 🗂️ 專案結構
 
 > **_爬蟲腳本僅用於資料截取，過程中有限制爬取速度，避免造成網站負擔，截取資料僅供學術使用，請勿使用於商業用途或進行攻擊行為。_**
@@ -91,9 +100,9 @@ streamlit run ./main.py
 
 ---
 
-## RAG 流程圖
+## 🔄RAG 流程圖
 
-![RAG 流程圖](https://raw.githubusercontent.com/yangyang0610/MediGuide/main/RAG.png)
+![RAG 流程圖](https://github.com/nickchen1998/Mediguide/blob/main/assets/RAG%20流程圖.png?raw=true)
 
 ---
 
