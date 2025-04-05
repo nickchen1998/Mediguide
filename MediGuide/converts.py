@@ -8,7 +8,7 @@ from pymongo.collection import Collection
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 
-def calculate_symptom_summary():
+def calculate_symptom_summary(department: str):
     if os.getenv("OPENAI_API_KEY") is None:
         secret_file = pathlib.Path(__file__).parent / ".streamlit" / "secrets.toml"
         with open(secret_file, "rb") as f:
@@ -17,14 +17,14 @@ def calculate_symptom_summary():
 
     with utils.get_mongo_database() as database:
         collection: Collection = database["Symptom"]
-        for data in collection.find({"summary": None}).limit(50):
+        for data in collection.find({"summary": None, "department": department}):
             symptom = schemas.Symptom(**data)
             symptom_summary = chains.get_symptom_summary_chain(symptom)
             collection.update_one({"_id": symptom.id}, {"$set": {"summary": symptom_summary}})
             print(symptom_summary)
 
 
-def calculate_symptom_summary_embedding():
+def calculate_symptom_summary_embedding(department: str):
     if os.getenv("OPENAI_API_KEY") is None:
         secret_file = pathlib.Path(__file__).parent / ".streamlit" / "secrets.toml"
         with open(secret_file, "rb") as f:
@@ -33,7 +33,7 @@ def calculate_symptom_summary_embedding():
 
     with utils.get_mongo_database() as database:
         collection: Collection = database["Symptom"]
-        for data in collection.find({"summary_embeddings": None, "summary": {"$ne": None}}):
+        for data in collection.find({"summary_embeddings": None, "summary": {"$ne": None}, "department": department}):
             symptom = schemas.Symptom(**data)
             embedding = OpenAIEmbeddings(
                 openai_api_key=os.getenv("OPENAI_API_KEY"),
@@ -43,5 +43,6 @@ def calculate_symptom_summary_embedding():
 
 
 if __name__ == '__main__':
-    calculate_symptom_summary()
-    calculate_symptom_summary_embedding()
+    for tmp in ["肝膽腸胃科", "耳鼻喉科", "皮膚科"]:
+        calculate_symptom_summary(tmp)
+        calculate_symptom_summary_embedding(tmp)
