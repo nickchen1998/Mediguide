@@ -26,8 +26,9 @@
 
 ├── /MediGuide/main.py              # 主程式
 
-├── /MediGuide/utils.py            # 工具函式：Whisper 語音辨識、對話紀錄處理
+├── /MediGuide/schemas.py            # 存放 Pydantic 物件，方便資料讀取出來後使用物件的方式操作
 
+├── /MediGuide/utils.py            # 工具函式：Whisper 語音辨識、對話紀錄處理
 
 ├── Dockerfile    # Docker 映像檔設定檔 (可用於 fly.io 或 local 部署)
 

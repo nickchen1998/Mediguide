@@ -13,30 +13,34 @@ from fake_useragent import UserAgent
 
 def get_paragraph(chrome: Chrome):
     for paragraph in chrome.find_elements(By.CSS_SELECTOR, "ul.QAunit"):
-        subject = paragraph.find_element(By.CSS_SELECTOR, "li.subject").text
+        try:
+            subject = paragraph.find_element(By.CSS_SELECTOR, "li.subject").text
 
-        asker_info = paragraph.find_element(By.CSS_SELECTOR, "li.asker").text
-        match = re.search(r'／([男女])／.*?,(\d{4}/\d{2}/\d{2})', asker_info)
-        gender = match.group(1)
-        question_time = datetime.strptime(match.group(2), '%Y/%m/%d')
+            asker_info = paragraph.find_element(By.CSS_SELECTOR, "li.asker").text
+            match = re.search(r'／([男女])／.*?,(\d{4}/\d{2}/\d{2})', asker_info)
+            gender = match.group(1)
+            question_time = datetime.strptime(match.group(2), '%Y/%m/%d')
 
-        question = paragraph.find_element(By.CSS_SELECTOR, "li.ask").text
+            question = paragraph.find_element(By.CSS_SELECTOR, "li.ask").text
 
-        answer = paragraph.find_element(By.CSS_SELECTOR, "li.ans").text
-        answer_time = datetime.strptime(match.group(2), '%Y/%m/%d')
+            answer = paragraph.find_element(By.CSS_SELECTOR, "li.ans").text
+            answer_time = datetime.strptime(match.group(2), '%Y/%m/%d')
 
-        data = dict(
-            subject_id=int(subject.split(" ")[0].replace("#", "")),
-            subject="".join(subject.split(" ")[1:]),
-            symptom=symptom,
-            question=question,
-            gender=gender,
-            question_time=question_time,
-            answer=answer,
-            department=dataset["department"],
-            answer_time=answer_time,
-        )
-        yield data
+            data = dict(
+                subject_id=int(subject.split(" ")[0].replace("#", "")),
+                subject="".join(subject.split(" ")[1:]),
+                symptom=symptom,
+                question=question,
+                gender=gender,
+                question_time=question_time,
+                answer=answer,
+                department=dataset["department"],
+                answer_time=answer_time,
+            )
+            yield data
+        except Exception as e:
+            print(e)
+            continue
 
 
 if __name__ == '__main__':
