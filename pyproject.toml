@@ -14,6 +14,7 @@ langchain-openai = "^0.3.10"
 langchain-mongodb = "^0.6.0"
 audio-recorder-streamlit = "^0.0.10"
 selenium = "^4.30.0"
+fake-useragent = "^2.1.0"
 
 
 [build-system]
