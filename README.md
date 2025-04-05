@@ -91,6 +91,12 @@ streamlit run ./main.py
 
 ---
 
+## RAG 流程圖
+
+![RAG 流程圖](https://raw.githubusercontent.com/yangyang0610/MediGuide/main/RAG.png)
+
+---
+
 ## 💡 延伸方向（可選擇實作）
 
 - 設計緊急風險分類（例如偵測關鍵詞如「胸痛」、「喘不過氣」）

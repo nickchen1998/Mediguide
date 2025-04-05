@@ -4,6 +4,7 @@ import tomllib
 import chains
 import schemas
 import utils
+from tqdm import tqdm
 from pymongo.collection import Collection
 from langchain_openai.embeddings import OpenAIEmbeddings
 
@@ -17,11 +18,10 @@ def calculate_symptom_summary(department: str):
 
     with utils.get_mongo_database() as database:
         collection: Collection = database["Symptom"]
-        for data in collection.find({"summary": None, "department": department}):
+        for data in tqdm(collection.find({"summary": None, "department": department}), desc="Calculating summary"):
             symptom = schemas.Symptom(**data)
             symptom_summary = chains.get_symptom_summary_chain(symptom)
             collection.update_one({"_id": symptom.id}, {"$set": {"summary": symptom_summary}})
-            print(symptom_summary)
 
 
 def calculate_symptom_summary_embedding(department: str):
@@ -33,7 +33,10 @@ def calculate_symptom_summary_embedding(department: str):
 
     with utils.get_mongo_database() as database:
         collection: Collection = database["Symptom"]
-        for data in collection.find({"summary_embeddings": None, "summary": {"$ne": None}, "department": department}):
+        for data in tqdm(
+                collection.find({"summary_embeddings": None, "summary": {"$ne": None}, "department": department}),
+                desc="Calculating summary embeddings"
+        ):
             symptom = schemas.Symptom(**data)
             embedding = OpenAIEmbeddings(
                 openai_api_key=os.getenv("OPENAI_API_KEY"),
