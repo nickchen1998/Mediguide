@@ -2,17 +2,18 @@ import os
 import utils
 import chains
 import streamlit as st
+
 from datetime import date
 from langchain_openai import ChatOpenAI
 from audio_recorder_streamlit import audio_recorder
 
+# initialize
 if os.environ.get("OPENAI_API_KEY") is None:
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-
-st.set_page_config(page_title="智慧問診機器人", page_icon="🩺")
-# 初始化對話紀錄
 if 'history' not in st.session_state:
     st.session_state['history'] = []
+
+st.set_page_config(page_title="智慧問診機器人", page_icon="🩺")
 
 with st.sidebar:
     st.header("📝 基本資料填寫")
