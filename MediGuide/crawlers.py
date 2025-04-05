@@ -50,7 +50,7 @@ if __name__ == '__main__':
         datasets = json.load(f)
 
     options = Options()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_argument(f'user-agent={UserAgent().random}')
     browser = Chrome(options=options)
     browser.maximize_window()
@@ -63,7 +63,6 @@ if __name__ == '__main__':
             By.TAG_NAME, "option") if tmp.get_attribute("value")]
 
         for symptom in symptom_list:
-            time.sleep(random.randint(4, 8))
             url = (f"https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?"
                    f"q_type={symptom}&UrlClass={dataset['department']}")
             browser.get(url)
