@@ -62,16 +62,20 @@ if question := st.chat_input("請輸入您的訊息..."):
     if not all([name, id_number, birthday, blood_type]):
         utils.set_chat_message("ai", "請先填寫基本資料，再進行問答！")
     else:
-        symptoms = utils.get_symptom_by_embeddings(question)
-        system_reply = chains.get_suggest_with_symptom_chain(
-            question=question, symptoms=symptoms
-        )
-        utils.set_chat_message("ai", system_reply, [{
-            "_id": str(symptom.id),
-            "department": symptom.department,
-            "symptom": symptom.symptom,
-            "summary": symptom.summary,
-        } for symptom in symptoms])
+        try:
+            symptoms = utils.get_symptom_by_embeddings(question)
+            system_reply = chains.get_suggest_with_symptom_chain(
+                question=question, symptoms=symptoms
+            )
+            utils.set_chat_message("ai", system_reply, [{
+                "_id": str(symptom.id),
+                "department": symptom.department,
+                "symptom": symptom.symptom,
+                "answer": symptom.answer,
+            } for symptom in symptoms])
+        except Exception as e:
+            print(e)
+            utils.set_chat_message("ai", "很抱歉，目前無法回答您的問題，請稍後再試或通知管理人員。")
 
 # 顯示問診摘要
 if st.session_state['history'] and not st.session_state['history'][-1]['content'] == "請先填寫基本資料，再進行問答！":
@@ -93,4 +97,6 @@ if st.session_state['history'] and not st.session_state['history'][-1]['content'
                 st.markdown(f"- **_id**：{reference['_id']}")
                 st.markdown(f"- **科別**：{reference['department']}")
                 st.markdown(f"- **症狀分類**：{reference['symptom']}")
-                st.markdown(f"- **摘要**：{reference['summary']}")
+                st.markdown(f"- **醫師回覆**：")
+                st.markdown(f"{reference['answer'].replace('回覆', '')}")
+                st.write("---")
