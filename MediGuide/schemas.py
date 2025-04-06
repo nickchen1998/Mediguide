@@ -10,13 +10,12 @@ class Symptom(BaseModel):
     subject: str
     symptom: str
     question: str
+    question_embeddings: Optional[List[float]] = None
     gender: str
     question_time: datetime
     answer: str
     department: str
     answer_time: datetime
-    summary: Optional[str] = None
-    summary_embeddings: Optional[List[float]] = None
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True
