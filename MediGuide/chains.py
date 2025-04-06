@@ -103,6 +103,6 @@ def get_suggest_with_symptom_chain(symptoms: List[Symptom], question: str):
     )
     chain = prompt | ChatOpenAI(model="gpt-4o", temperature=0)
     return chain.invoke({
-        "references": '----------'.join([tmp.summary for tmp in symptoms]),
+        "references": '----------'.join([tmp.answer for tmp in symptoms]),
         "question": question
     }).content

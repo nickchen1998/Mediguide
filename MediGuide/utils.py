@@ -94,7 +94,7 @@ def get_symptom_by_embeddings(question: str) -> List[Symptom]:
             {
                 "$vectorSearch": {
                     "index": "default",
-                    "path": "summary_embeddings",
+                    "path": "question_embeddings",
                     "queryVector": embeddings,
                     "numCandidates": 100,
                     "limit": 3
