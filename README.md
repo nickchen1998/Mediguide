@@ -6,6 +6,8 @@
 
 這是一個以 Streamlit 打造的智慧問診機器人原型，整合 OpenAI GPT-4o 進行問答，以及 Whisper 模型辨識語音，讓使用者可以透過文字或語音與系統互動，模擬簡易問診流程。
 
+![專案封面](https://github.com/nickchen1998/Mediguide/blob/main/assets/專案封面.png?raw=true)
+
 ---
 
 ## ⚒️ Built With
