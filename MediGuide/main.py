@@ -51,7 +51,9 @@ with st.sidebar:
         st.session_state["recognized"] = False
 
     st.markdown("---")
-    st.caption("※ 本頁面僅作為展示用途，所填資料不會被儲存。")
+    st.caption("※ 本頁面僅作為展示用途，資料不會被儲存。")
+    st.caption("※ 本站台資料來源為 “衛生福利部 - 台灣 e 院”，https://sp1.hso.mohw.gov.tw/doctor/ 。")
+    st.caption("※ 目前支援問診的科別為 肝膽腸胃科、皮膚科、耳鼻喉科，未來會視情況進行擴充。")
 
 # 問診區塊
 st.title("智慧問診機器人 🩺")
