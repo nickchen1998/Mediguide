@@ -1,5 +1,29 @@
 [
   {
+    "department": "內科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A4%BA%AC%EC&q_like=0&q_type=%EBC%B3%C2%AFl%A9%CA%A6%E5%BA%DE%AA%A2",
+    "start_q_type": "蕁麻疹性血管炎"
+  },
+  {
+    "department": "外科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A5%7E%AC%EC&q_like=0&q_type=%E6%B3%A6%D7",
+    "start_q_type": "瘜肉"
+  },
+  {
+    "department": "牙科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A4%FA%AC%EC&q_like=0&q_type=%F9%AF%B0%A9%B0%A9%A7%E9",
+    "start_q_type": "顴骨骨折"
+  },
+  {
+    "department": "骨科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%B0%A9%AC%EC&q_like=0&q_type=%F9%AF%B0%A9%B0%A9%A7%E9%B3N%AB%E1",
+    "start_q_type": "顴骨骨折術後"
+  },
+  {
+    "department": "眼科",
+    "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%B2%B4%AC%EC&q_like=0&q_type=%C5%E7%A5%FA%B0%DD%C3D",
+    "start_q_type": "驗光問題"
+  },{
     "department": "肝膽腸胃科",
     "start_url": "https://sp1.hso.mohw.gov.tw/doctor/Often_question/type_detail.php?UrlClass=%A8x%C1x%B8z%ADG%AC%EC&q_like=0&q_type=%E4%FA%A4%DF",
     "start_q_type": "噁心"
