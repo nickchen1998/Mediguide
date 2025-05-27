@@ -26,7 +26,13 @@ with st.sidebar:
         index=["", "A", "B", "AB", "O"].index(st.session_state.get("blood_type", ""))
     )
 
-    if audio_bytes := audio_recorder(text="使用聲音輔助輸入", icon_size="15px"):
+    try:
+        audio_bytes = audio_recorder(text="使用聲音輔助輸入", icon_size="15px")
+    except Exception as e:
+        st.sidebar.error("❌ 目前設備不支援麥克風功能。")
+        audio_bytes = None
+
+    if audio_bytes:
         if not st.session_state.get("recognized", False) and len(audio_bytes) / (1024 * 1024) > 0.1:
             st.sidebar.success("✅ 錄音完成，正在辨識...")
             try:
