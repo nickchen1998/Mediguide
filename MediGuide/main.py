@@ -108,6 +108,8 @@ if st.session_state['history'] and not st.session_state['history'][-1]['content'
                 st.markdown(f"- **_id**：{reference['_id']}")
                 st.markdown(f"- **科別**：{reference['department']}")
                 st.markdown(f"- **症狀分類**：{reference['symptom']}")
+                st.markdown(f"- **患者主訴**：")
+                st.markdown(f"{reference['question']}")
                 st.markdown(f"- **醫師回覆**：")
                 st.markdown(f"{reference['answer'].replace('回覆', '')}")
                 st.write("---")
