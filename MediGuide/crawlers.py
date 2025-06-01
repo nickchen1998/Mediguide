@@ -79,5 +79,6 @@ if __name__ == '__main__':
                 browser.get(tmp_url)
 
             results.extend(datas)
+
     browser.quit()
     utils.insert_symptom_subject_datas(results)
