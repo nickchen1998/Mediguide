@@ -70,6 +70,12 @@ def get_mongo_vectorstore() -> MongoDBAtlasVectorSearch:
             config = tomllib.load(f)
         os.environ["MONGODB_URI"] = config["MONGODB_URI"]
 
+    if os.getenv("OPENAI_API_KEY") is None:
+        secret_file = pathlib.Path(__file__).parent / ".streamlit" / "secrets.toml"
+        with open(secret_file, "rb") as f:
+            config = tomllib.load(f)
+        os.environ["OPENAI_API_KEY"] = config["OPENAI_API_KEY"]
+
     client = MongoClient(host=os.getenv("MONGODB_URI"))
     try:
         database = Database(client, name="MediGuide")
@@ -81,13 +87,12 @@ def get_mongo_vectorstore() -> MongoDBAtlasVectorSearch:
             text_key="question"
         )
 
-        yield vectorstore.add_documents()
+        yield vectorstore
     finally:
         client.close()
 
 
 def insert_symptom_subject_datas(datas: List[dict]):
-
     with get_mongo_vectorstore() as vectorstore:
         documents = []
         for data in datas:
@@ -103,12 +108,6 @@ def insert_symptom_subject_datas(datas: List[dict]):
 
 
 def get_symptom_by_embeddings(question: str) -> List[Symptom]:
-    if os.getenv("OPENAI_API_KEY") is None:
-        secret_file = pathlib.Path(__file__).parent / ".streamlit" / "secrets.toml"
-        with open(secret_file, "rb") as f:
-            config = tomllib.load(f)
-        os.environ["OPENAI_API_KEY"] = config["OPENAI_API_KEY"]
-
     with get_mongo_vectorstore() as vectorstore:
         result = vectorstore.similarity_search(question, k=3)
 
