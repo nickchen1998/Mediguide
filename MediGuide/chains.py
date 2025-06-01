@@ -63,3 +63,6 @@ def get_suggestion_chain(question: str):
         )
 
         return chain.invoke({"query": question})
+
+if __name__ == '__main__':
+    print(get_suggestion_chain("胃食道逆流可能的原因？"))

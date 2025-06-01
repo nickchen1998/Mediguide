@@ -68,12 +68,12 @@ if question := st.chat_input("請輸入您的訊息..."):
             utils.set_chat_message(
                 "ai",
                 suggestion.get("result"),
-                [{"_id": symptom.metadata.get("_id"),
-                  "department": symptom.metadata.get("department"),
-                  "symptom": symptom.metadata.get("symptom"),
-                  "answer": symptom.metadata.get("answer"),
-                  "question": suggestion.page_content,
-                  } for symptom in suggestion.get("source_documents", [])])
+                [{"_id": document.metadata.get("_id"),
+                  "department": document.metadata.get("department"),
+                  "symptom": document.metadata.get("symptom"),
+                  "answer": document.metadata.get("answer"),
+                  "question": document.page_content,
+                  } for document in suggestion.get("source_documents", [])])
         except Exception as e:
             print(e)
             utils.set_chat_message("ai", "很抱歉，目前無法回答您的問題，請稍後再試或通知管理人員。")
