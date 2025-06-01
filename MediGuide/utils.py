@@ -13,6 +13,8 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
 from langchain_openai import OpenAIEmbeddings
+from langchain_core.documents import Document
+from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
 
 
 def write_history():
@@ -61,7 +63,7 @@ def get_record_text_by_whisper(audio_bytes: bytes):
 
 
 @contextlib.contextmanager
-def get_mongo_database() -> Database:
+def get_mongo_vectorstore() -> MongoDBAtlasVectorSearch:
     if os.getenv("MONGODB_URI") is None:
         secret_file = pathlib.Path(__file__).parent / ".streamlit" / "secrets.toml"
         with open(secret_file, "rb") as f:
@@ -70,15 +72,34 @@ def get_mongo_database() -> Database:
 
     client = MongoClient(host=os.getenv("MONGODB_URI"))
     try:
-        yield Database(client, name="MediGuide")
+        database = Database(client, name="MediGuide")
+        vectorstore = MongoDBAtlasVectorSearch(
+            collection=Collection(database, name="Symptom"),
+            embedding=OpenAIEmbeddings(model="text-embedding-3-small"),
+            index_name="default",
+            embedding_key="question_embeddings",
+            text_key="question"
+        )
+
+        yield vectorstore.add_documents()
     finally:
         client.close()
 
 
 def insert_symptom_subject_datas(datas: List[dict]):
-    with get_mongo_database() as database:
-        collection = Collection(database, name="Symptom")
-        collection.insert_many(datas)
+
+    with get_mongo_vectorstore() as vectorstore:
+        documents = []
+        for data in datas:
+            if vectorstore.collection.find_one({"subject_id": data["subject_id"], "symptom": data["symptom"]}):
+                continue
+
+            documents.append(Document(
+                page_content=data.pop("question"),
+                metadata=data
+            ))
+
+        vectorstore.add_documents(documents)
 
 
 def get_symptom_by_embeddings(question: str) -> List[Symptom]:
@@ -88,17 +109,7 @@ def get_symptom_by_embeddings(question: str) -> List[Symptom]:
             config = tomllib.load(f)
         os.environ["OPENAI_API_KEY"] = config["OPENAI_API_KEY"]
 
-    with get_mongo_database() as database:
-        embeddings = OpenAIEmbeddings(model="text-embedding-3-small").embed_query(question)
-        result = database["Symptom"].aggregate([
-            {
-                "$vectorSearch": {
-                    "index": "default",
-                    "path": "question_embeddings",
-                    "queryVector": embeddings,
-                    "numCandidates": 100,
-                    "limit": 3
-                }
-            }
-        ])
-        return [Symptom(**item) for item in result]
+    with get_mongo_vectorstore() as vectorstore:
+        result = vectorstore.similarity_search(question, k=3)
+
+        return [Symptom(question=item.page_content, **item.metadata) for item in result]

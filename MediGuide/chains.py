@@ -3,6 +3,7 @@ from schemas import Symptom
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
+from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
 
 
 def get_user_info_chain(record_text: str):

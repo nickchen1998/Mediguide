@@ -83,6 +83,7 @@ if question := st.chat_input("請輸入您的訊息..."):
                 "department": symptom.department,
                 "symptom": symptom.symptom,
                 "answer": symptom.answer,
+                "question": symptom.question
             } for symptom in symptoms])
         except Exception as e:
             print(e)
