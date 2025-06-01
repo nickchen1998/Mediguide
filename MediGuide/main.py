@@ -1,13 +1,9 @@
-import os
 import utils
 import chains
 import streamlit as st
-
 from datetime import date
 from audio_recorder_streamlit import audio_recorder
 
-if os.environ.get("OPENAI_API_KEY") is None:
-    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 if 'history' not in st.session_state:
     st.session_state['history'] = []
 
