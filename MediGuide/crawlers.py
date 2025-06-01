@@ -55,6 +55,7 @@ if __name__ == '__main__':
     browser = Chrome(options=options)
     browser.maximize_window()
 
+    results = []
     for dataset in datasets:
         browser.get(dataset["start_url"])
 
@@ -77,7 +78,6 @@ if __name__ == '__main__':
                 time.sleep(random.randint(4, 8))
                 browser.get(tmp_url)
 
-            if datas:
-                utils.insert_symptom_subject_datas(datas)
-
+            results.extend(datas)
     browser.quit()
+    utils.insert_symptom_subject_datas(results)

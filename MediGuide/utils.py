@@ -95,7 +95,7 @@ def insert_symptom_subject_datas(datas: List[dict]):
     with get_mongo_vectorstore() as vectorstore:
         documents = []
         for data in datas:
-            if vectorstore.collection.find_one({"subject_id": data["subject_id"], "symptom": data["symptom"]}):
+            if vectorstore.collection.find_one({"subject_id": data["subject_id"]}):
                 continue
 
             documents.append(Document(
@@ -103,4 +103,4 @@ def insert_symptom_subject_datas(datas: List[dict]):
                 metadata=data
             ))
 
-        vectorstore.add_documents(documents)
+        vectorstore.add_documents(documents, batch_size=100)
