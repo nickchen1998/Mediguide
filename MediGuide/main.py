@@ -26,9 +26,7 @@ with st.sidebar:
         if not st.session_state.get("recognized", False) and len(audio_bytes) / (1024 * 1024) > 0.1:
             st.sidebar.success("✅ 錄音完成，正在辨識...")
             try:
-                record_text = utils.get_record_text_by_whisper(audio_bytes)
-                user_info = chains.get_user_info_chain(record_text)
-
+                user_info = chains.get_user_info_by_record_chain(audio_bytes)
                 st.session_state["name"] = user_info.get("name", "")
                 st.session_state["id_number"] = user_info.get("id_number", "")
                 if user_info.get("birthday"):

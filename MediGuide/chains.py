@@ -1,11 +1,12 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from utils import get_mongo_vectorstore
+from utils import get_mongo_vectorstore, get_record_text_by_whisper
 from langchain.chains.retrieval_qa.base import RetrievalQA
+from langchain_core.runnables import RunnableLambda
 
 
-def get_user_info_chain(record_text: str):
+def get_user_info_by_record_chain(audio_bytes: bytes):
     prompt = PromptTemplate.from_template(
         """
         你是一位表單資料解析助手，請根據下列輸入句子，擷取使用者的基本資料並以 JSON 格式輸出：
@@ -28,8 +29,13 @@ def get_user_info_chain(record_text: str):
         }}
         """
     )
-    chain = prompt | ChatOpenAI(model="gpt-4o", temperature=0) | JsonOutputParser()
-    return chain.invoke({"record_text": record_text})
+    chain = (
+            RunnableLambda(get_record_text_by_whisper) |
+            prompt |
+            ChatOpenAI(model="gpt-4o", temperature=0) |
+            JsonOutputParser()
+    )
+    return chain.invoke(audio_bytes)
 
 
 def get_suggestion_chain(question: str):
