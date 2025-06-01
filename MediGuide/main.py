@@ -22,13 +22,7 @@ with st.sidebar:
         index=["", "A", "B", "AB", "O"].index(st.session_state.get("blood_type", ""))
     )
 
-    try:
-        audio_bytes = audio_recorder(text="使用聲音輔助輸入", icon_size="15px")
-    except Exception as e:
-        st.sidebar.error("❌ 目前設備不支援麥克風功能。")
-        audio_bytes = None
-
-    if audio_bytes:
+    if audio_bytes := audio_recorder(text="使用聲音輔助輸入", icon_size="15px"):
         if not st.session_state.get("recognized", False) and len(audio_bytes) / (1024 * 1024) > 0.1:
             st.sidebar.success("✅ 錄音完成，正在辨識...")
             try:
@@ -70,17 +64,16 @@ if question := st.chat_input("請輸入您的訊息..."):
         utils.set_chat_message("ai", "請先填寫基本資料，再進行問答！")
     else:
         try:
-            symptoms = utils.get_symptom_by_embeddings(question)
-            system_reply = chains.get_suggest_with_symptom_chain(
-                question=question, symptoms=symptoms
-            )
-            utils.set_chat_message("ai", system_reply, [{
-                "_id": str(symptom.id),
-                "department": symptom.department,
-                "symptom": symptom.symptom,
-                "answer": symptom.answer,
-                "question": symptom.question
-            } for symptom in symptoms])
+            suggestion = chains.get_suggestion_chain(question=question)
+            utils.set_chat_message(
+                "ai",
+                suggestion.get("result"),
+                [{"_id": symptom.metadata.get("_id"),
+                  "department": symptom.metadata.get("department"),
+                  "symptom": symptom.metadata.get("symptom"),
+                  "answer": symptom.metadata.get("answer"),
+                  "question": suggestion.page_content,
+                  } for symptom in suggestion.get("source_documents", [])])
         except Exception as e:
             print(e)
             utils.set_chat_message("ai", "很抱歉，目前無法回答您的問題，請稍後再試或通知管理人員。")

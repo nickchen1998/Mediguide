@@ -8,7 +8,6 @@ import streamlit as st
 
 from typing import List
 from openai import OpenAI
-from schemas import Symptom
 from pymongo.database import Database
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
@@ -105,10 +104,3 @@ def insert_symptom_subject_datas(datas: List[dict]):
             ))
 
         vectorstore.add_documents(documents)
-
-
-def get_symptom_by_embeddings(question: str) -> List[Symptom]:
-    with get_mongo_vectorstore() as vectorstore:
-        result = vectorstore.similarity_search(question, k=3)
-
-        return [Symptom(question=item.page_content, **item.metadata) for item in result]
