@@ -2,12 +2,10 @@ import os
 import time
 import tomllib
 import pathlib
-import tempfile
 import contextlib
 import streamlit as st
 
 from typing import List
-from openai import OpenAI
 from pymongo.database import Database
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
@@ -40,25 +38,6 @@ def set_chat_message(role, content, references=None):
         "content": content,
         "references": references
     })
-
-
-def get_record_text_by_whisper(audio_bytes: bytes):
-    api_key = os.getenv("OPENAI_API_KEY")
-    if api_key is None:
-        api_key = st.secrets["OPENAI_API_KEY"]
-    openai_client = OpenAI(api_key=api_key)
-
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
-        tmp_file.write(audio_bytes)
-        tmp_file_path = tmp_file.name
-    with open(tmp_file_path, "rb") as audio_file:
-        translation = openai_client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file,
-            language="zh",
-        )
-
-    return translation.text
 
 
 @contextlib.contextmanager

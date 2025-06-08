@@ -2,7 +2,6 @@ import utils
 import chains
 import streamlit as st
 from datetime import date
-from audio_recorder_streamlit import audio_recorder
 
 if 'history' not in st.session_state:
     st.session_state['history'] = []
@@ -21,28 +20,6 @@ with st.sidebar:
         "血型", ["", "A", "B", "AB", "O"],
         index=["", "A", "B", "AB", "O"].index(st.session_state.get("blood_type", ""))
     )
-
-    if audio_bytes := audio_recorder(text="使用聲音輔助輸入", icon_size="15px"):
-        if not st.session_state.get("recognized", False) and len(audio_bytes) / (1024 * 1024) > 0.1:
-            st.sidebar.success("✅ 錄音完成，正在辨識...")
-            try:
-                user_info = chains.get_user_info_by_record_chain(audio_bytes)
-                st.session_state["name"] = user_info.get("name", "")
-                st.session_state["id_number"] = user_info.get("id_number", "")
-                if user_info.get("birthday"):
-                    st.session_state["birthday"] = date.fromisoformat(user_info["birthday"])
-                if user_info.get("blood_type"):
-                    st.session_state["blood_type"] = user_info.get("blood_type")
-
-                st.session_state["recognized"] = True
-                st.sidebar.success("✅ 辨識完成，請查閱上方基本資料是否正確！")
-                st.rerun()
-            except Exception as e:
-                print(e)
-                st.sidebar.error("❌ 辨識失敗，請稍後再試。")
-                st.session_state["recognized"] = False
-    else:
-        st.session_state["recognized"] = False
 
     st.markdown("---")
     st.caption("※ 本頁面僅作為展示用途，資料不會被儲存。")
