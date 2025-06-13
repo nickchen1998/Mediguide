@@ -1,6 +1,6 @@
 # 單個檔案
 *.env
-MediGuide/.streamlit/secrets.toml
+.streamlit/secrets.toml
 poetry.lock
 
 # 目錄名稱
